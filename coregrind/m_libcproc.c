@@ -1064,7 +1064,7 @@ UInt VG_(read_millisecond_timer) ( void )
    return (now - base) / 1000;
 }
 
-#  if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd)
+#  if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd) || defined(VGO_netbsd)
 void VG_(clock_gettime) ( struct vki_timespec *ts, vki_clockid_t clk_id )
 {
     SysRes res;
@@ -1118,6 +1118,18 @@ UInt VG_(get_user_milliseconds)(void)
 
 #  elif defined(VGO_freebsd)
    {
+      struct vki_rusage ru;
+      VG_(memset)(&ru, 0, sizeof(ru));
+      SysRes sr = VG_(do_syscall2)(__NR_getrusage, VKI_RUSAGE_SELF, (UWord)&ru);
+      if (!sr_isError(sr)) {
+         res = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000;
+      }
+   }
+
+#  elif defined(VGO_netbsd)
+   {
+      //Unsure if this is the proper way to do this for NetBSD
+      //Placeholder
       struct vki_rusage ru;
       VG_(memset)(&ru, 0, sizeof(ru));
       SysRes sr = VG_(do_syscall2)(__NR_getrusage, VKI_RUSAGE_SELF, (UWord)&ru);
