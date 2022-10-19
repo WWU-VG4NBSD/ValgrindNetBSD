@@ -45,7 +45,7 @@
 #include "pub_core_threadstate.h"
 #include "pub_core_tooliface.h"
 #include "pub_core_ume.h"
-#include "priv_initimg_pathscan.h"
+#include "pub_core_pathscan.h"
 #include "pub_core_initimg.h"         /* self */
 
 /* --- !!! --- EXTERNAL HEADERS start --- !!! --- */
