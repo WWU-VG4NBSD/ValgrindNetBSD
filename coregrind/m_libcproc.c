@@ -1064,7 +1064,7 @@ UInt VG_(read_millisecond_timer) ( void )
    return (now - base) / 1000;
 }
 
-#  if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd) || defined(VGO_netbsd)
+#  if defined(VGO_linux) || defined(VGO_solaris) || defined(VGO_freebsd)
 void VG_(clock_gettime) ( struct vki_timespec *ts, vki_clockid_t clk_id )
 {
     SysRes res;
@@ -1072,7 +1072,7 @@ void VG_(clock_gettime) ( struct vki_timespec *ts, vki_clockid_t clk_id )
                            (UWord)ts);
     vg_assert (sr_isError(res) == 0);
 }
-#  elif defined(VGO_darwin)
+#  elif defined(VGO_darwin) || defined(VGO_netbsd)
   /* See pub_tool_libcproc.h */
 #  else
 #    error "Unknown OS"
@@ -1130,12 +1130,7 @@ UInt VG_(get_user_milliseconds)(void)
    {
       //Unsure if this is the proper way to do this for NetBSD
       //Placeholder
-      struct vki_rusage ru;
-      VG_(memset)(&ru, 0, sizeof(ru));
-      SysRes sr = VG_(do_syscall2)(__NR_getrusage, VKI_RUSAGE_SELF, (UWord)&ru);
-      if (!sr_isError(sr)) {
-         res = ru.ru_utime.tv_sec * 1000 + ru.ru_utime.tv_usec / 1000;
-      }
+      res = 0;
    }
 
 #  elif defined(VGO_darwin)
