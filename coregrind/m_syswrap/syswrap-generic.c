@@ -4386,11 +4386,15 @@ PRE(sys_open)
 
 #if defined(HAVE_PROC_SELF_AUXV)
    /* Handle also the case of /proc/self/auxv or /proc/<pid>/auxv. */
+   if (ML_(handle_auxv_open)(status, (const HChar *)ARG1, ARG2))
+      return;
+#endif
+#if defined(VGO_linux)
+   /* Handle also the case of /proc/self/auxv or /proc/<pid>/auxv. */
    if (ML_(handle_auxv_open)(status, (const HChar *)ARG1, ARG2)
       || ML_(handle_self_exe_open)(status, (const HChar *)(Addr)ARG1, ARG2))
       return;
 #endif
-
    /* Otherwise handle normally */
    *flags |= SfMayBlock;
 }
